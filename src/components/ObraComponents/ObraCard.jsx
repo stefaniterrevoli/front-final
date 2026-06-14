@@ -31,7 +31,7 @@ const ObraCard = ({ obra, onClick, onLike, currentUser }) => {
 
   return (
     <div
-      className="bg-purple-950 rounded-xl overflow-hidden border border-purple-800 hover:border-pink-700 transition-all cursor-pointer group"
+      className="bg-yellow-150 rounded-xl overflow-hidden border border-purple-800 hover:border-pink-700 transition-all cursor-pointer group"
       onClick={() => onClick(obra)}
     >
       <div className="h-48 bg-gradient-to-br from-purple-800 to-pink-900 flex items-center justify-center text-6xl">
@@ -46,13 +46,15 @@ const ObraCard = ({ obra, onClick, onLike, currentUser }) => {
         )}
       </div>
       <div className="p-4">
-        <h3 className="text-white font-bold text-lg">{obra.title}</h3>
+        <h3 className=" font-titulos text-white font-bold text-lg">
+          {obra.title}
+        </h3>
         <p className="text-gray-400 text-sm">por {obra.artistName}</p>
         <div className="flex items-center justify-between mt-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onLike(obra.id);
+              onLike(obra.id, currentUser);
             }}
             className="flex items-center gap-1 text-sm"
           >

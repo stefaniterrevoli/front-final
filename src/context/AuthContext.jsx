@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
+import api from "../services/api";
 
 const AuthContext = createContext();
 
@@ -12,64 +13,55 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("creativa_user");
-    if (stored) {
+    const token = localStorage.getItem("token");
+    if (stored && token) {
       setUser(JSON.parse(stored));
     }
     setLoading(false);
   }, []);
 
   const register = async (userData) => {
-    const users = JSON.parse(localStorage.getItem("creativa_users") || "[]");
-    const exists = users.find((u) => u.email === userData.email);
-    if (exists) throw new Error("El email ya está registrado");
-
-    const role = userData.email.includes("admin") ? "admin" : "user";
-    const newUser = {
-      id: Date.now(),
-      name: userData.name,
-      lastname: userData.lastname,
+    const fullName = userData.lastname
+      ? `${userData.name} ${userData.lastname}`
+      : userData.name;
+    const response = await api.post("/users", {
+      name: fullName,
       email: userData.email,
-      birthYear: userData.born,
-      role,
+      password: userData.password,
+      commune: userData.commune || "",
+      phone: userData.phone || "",
+      address: userData.address || "",
+      age: parseInt(userData.born || userData.age) || 18,
+    });
+    const data = response.data;
+    const newUser = {
+      id: data.userId,
+      userId: data.userId,
+      name: data.name,
+      email: data.email,
     };
-    users.push({ ...newUser, password: userData.password });
-    localStorage.setItem("creativa_users", JSON.stringify(users));
-
-    const { password, ...safeUser } = { ...newUser, password: userData.password };
-    setUser(safeUser);
-    localStorage.setItem("creativa_user", JSON.stringify(safeUser));
-    return safeUser;
+    return newUser;
   };
 
   const login = async (email, password) => {
-    const users = JSON.parse(localStorage.getItem("creativa_users") || "[]");
-    const found = users.find((u) => u.email === email && u.password === password);
-
-    if (!found) {
-      const role = email.includes("admin") ? "admin" : "user";
-      const newUser = {
-        id: Date.now(),
-        name: email.split("@")[0],
-        lastname: "",
-        email,
-        birthYear: 1990,
-        role,
-      };
-      users.push({ ...newUser, password });
-      localStorage.setItem("creativa_users", JSON.stringify(users));
-      setUser(newUser);
-      localStorage.setItem("creativa_user", JSON.stringify(newUser));
-      return newUser;
-    }
-
-    const { password: _, ...safeUser } = found;
-    setUser(safeUser);
-    localStorage.setItem("creativa_user", JSON.stringify(safeUser));
-    return safeUser;
+    const response = await api.post("/users/login", { email, password });
+    const data = response.data;
+    const userData = {
+      id: data.userId,
+      userId: data.userId,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+    };
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("creativa_user", JSON.stringify(userData));
+    setUser(userData);
+    return userData;
   };
 
   const logout = () => {
     localStorage.removeItem("creativa_user");
+    localStorage.removeItem("token");
     setUser(null);
   };
 

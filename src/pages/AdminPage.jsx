@@ -6,10 +6,10 @@ import AdminNoticias from "../components/AdminComponents/AdminNoticias";
 import AdminEventos from "../components/AdminComponents/AdminEventos";
 
 const tabs = [
-  { id: "reportes", label: "Reportes", icon: "⚠️" },
-  { id: "obras", label: "Obras", icon: "🎨" },
-  { id: "noticias", label: "Noticias", icon: "📰" },
-  { id: "eventos", label: "Eventos", icon: "📅" },
+  { id: "reportes", label: "Reportes", icon: "" },
+  { id: "obras", label: "Obras", icon: "" },
+  { id: "noticias", label: "Noticias", icon: "" },
+  { id: "eventos", label: "Eventos", icon: "" },
 ];
 
 const AdminContent = () => {

@@ -3,7 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import CreadorCard from "../components/CreadorComponents/CreadorCard";
 
 const CreadoresContent = () => {
-  const { creators, isSubscribed, subscribe, unsubscribe, donate } = useCreadores();
+  const { creators, isSubscribed, subscribe, unsubscribe, donate } =
+    useCreadores();
   const { user } = useAuth();
 
   const handleSubscribe = (creatorId, amount) => {
@@ -27,7 +28,9 @@ const CreadoresContent = () => {
         <h1 className="font-titulos text-5xl mb-8">Creadores</h1>
 
         {creators.length === 0 ? (
-          <p className="text-gray-400 text-center py-20">No hay creadores registrados.</p>
+          <p className="text-gray-400 text-center py-20">
+            No hay creadores registrados.
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {creators.map((c) => (
@@ -38,7 +41,6 @@ const CreadoresContent = () => {
                 onSubscribe={handleSubscribe}
                 onUnsubscribe={handleUnsubscribe}
                 onDonate={handleDonate}
-                currentUser={user?.email}
               />
             ))}
           </div>

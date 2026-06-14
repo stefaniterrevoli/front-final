@@ -1,146 +1,86 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 const ObrasContext = createContext();
-const STORAGE_KEY = "creativa_obras";
-
-const clone = (obj) => JSON.parse(JSON.stringify(obj));
-
-const defaultObras = [
-  {
-    id: 1,
-    title: "Atardecer digital",
-    description:
-      "Una obra que captura la calidez del atardecer en un estilo digital vibrante.",
-    image: "",
-    artistName: "María G.",
-    artistEmail: "maria@test.com",
-    date: "Jun 2026",
-    likes: ["usuario_1", "usuario_2"],
-    comments: [
-      {
-        id: 1,
-        userName: "Carlos",
-        text: "Hermosos colores!",
-        date: "10 Jun 2026",
-      },
-      {
-        id: 2,
-        userName: "Ana",
-        text: "Me encanta la composición",
-        date: "11 Jun 2026",
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "El vacío digital",
-    description:
-      "Exploración conceptual del espacio negativo en el arte digital.",
-    image: "",
-    artistName: "Carlos R.",
-    artistEmail: "carlos@test.com",
-    date: "May 2026",
-    likes: ["usuario_1"],
-    comments: [
-      { id: 3, userName: "Lucía", text: "Muy profundo", date: "8 Jun 2026" },
-    ],
-  },
-  {
-    id: 3,
-    title: "Retrato en óleo",
-    description: "Retrato clásico al óleo con técnicas mixtas contemporáneas.",
-    image: "",
-    artistName: "Lucía M.",
-    artistEmail: "lucia@test.com",
-    date: "Abr 2026",
-    likes: [],
-    comments: [],
-  },
-  {
-    id: 4,
-    title: "Explosión de colores",
-    description:
-      "Una explosión de color y movimiento que representa la energía creativa.",
-    image: "",
-    artistName: "Pedro A.",
-    artistEmail: "pedro@test.com",
-    date: "Abr 2026",
-    likes: ["usuario_3"],
-    comments: [
-      { id: 4, userName: "María", text: "Espectacular!", date: "5 Abr 2026" },
-    ],
-  },
-];
-
-function load() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return clone(defaultObras);
-}
-
-function save(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error("Error guardando obras:", e);
-  }
-}
 
 export function ObrasProvider({ children }) {
-  const [obras, setObras] = useState(load);
+  const [obras, setObras] = useState([]);
 
-  const addObra = (obra) => {
-    setObras((prev) => {
-      const next = [
-        {
-          id: Date.now(),
-          date: new Date().toLocaleDateString(),
-          likes: [],
-          comments: [],
-          ...obra,
-        },
-        ...prev,
-      ];
-      save(next);
-      return next;
-    });
+  const loadObras = async () => {
+    try {
+      const response = await api.get("/artworks");
+      const mapped = response.data.map((o) => ({
+        id: o.artwork_id,
+        artworkId: o.artwork_id,
+        title: o.title,
+        description: o.description,
+        image: o.image_url ? `http://localhost:3000${o.image_url}` : "",
+        artistName: o.artist_name || "",
+        artistEmail: o.artist_email || "",
+        creatorId: o.creator_id,
+        date: o.publication_date
+          ? new Date(o.publication_date).toLocaleDateString()
+          : "",
+        likes: [],
+        comments: [],
+      }));
+      setObras(mapped);
+    } catch (error) {
+      console.error("Error loading artworks:", error);
+    }
   };
 
-  const toggleLike = (obraId, userId) => {
-    setObras((prev) => {
-      const next = prev.map((o) => {
-        if (o.id !== obraId) return o;
-        const has = o.likes.includes(userId);
-        return {
-          ...o,
-          likes: has
-            ? o.likes.filter((id) => id !== userId)
-            : [...o.likes, userId],
-        };
+  useEffect(() => {
+    loadObras();
+  }, []);
+
+  const addObra = async (obra) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const userData = JSON.parse(localStorage.getItem("creativa_user") || "{}");
+      const userRes = await api.get(`/creators/${userData.userId}`);
+      const creatorId = userRes.data.creatorId;
+
+      await api.post("/artworks", {
+        creatorId,
+        title: obra.title,
+        description: obra.description,
+        artworkType: obra.artworkType || "obra",
+        imageUrl: obra.image || null,
       });
-      save(next);
-      return next;
-    });
+      await loadObras();
+    } catch (error) {
+      console.error("Error adding artwork:", error);
+    }
   };
 
-  const addComment = (obraId, comment) => {
-    setObras((prev) => {
-      const next = prev.map((o) => {
-        if (o.id !== obraId) return o;
-        return {
-          ...o,
-          comments: [...o.comments, { id: Date.now(), ...comment }],
-        };
+  const toggleLike = async (obraId, userId) => {
+    console.log("Like toggled - backend pending implementation");
+  };
+
+  const addComment = async (obraId, comment) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const userData = JSON.parse(localStorage.getItem("creativa_user") || "{}");
+
+      await api.post("/comments", {
+        userId: userData.userId,
+        artworkId: obraId,
+        chapterId: 5000,
+        contents: comment.text,
       });
-      save(next);
-      return next;
-    });
+      await loadObras();
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
   };
 
   return (
-    <ObrasContext.Provider value={{ obras, addObra, toggleLike, addComment }}>
+    <ObrasContext.Provider value={{ obras, addObra, toggleLike, addComment, loadObras }}>
       {children}
     </ObrasContext.Provider>
   );

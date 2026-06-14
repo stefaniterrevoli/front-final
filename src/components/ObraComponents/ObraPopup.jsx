@@ -1,27 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-
-const ADMIN_KEY = "creativa_admin_data";
-
-function reportComment(comment, userName, obraTitle, reportedBy) {
-  try {
-    const raw = localStorage.getItem(ADMIN_KEY);
-    const data = raw ? JSON.parse(raw) : { reports: [], obras: [], noticias: [], eventos: [] };
-    data.reports = data.reports || [];
-    data.reports.push({
-      id: Date.now(),
-      comment,
-      reportedBy,
-      author: userName,
-      obra: obraTitle,
-      date: new Date().toLocaleDateString(),
-      status: "pending",
-    });
-    localStorage.setItem(ADMIN_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error("Error al reportar:", e);
-  }
-}
+import api from "../../services/api";
 
 const HeartOutline = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -47,14 +26,13 @@ const ObraPopup = ({ obra, onClose, onLike, onComment }) => {
     setContextMenu({ x: e.clientX, y: e.clientY, comment: c });
   };
 
-  const handleReport = () => {
+  const handleReport = async () => {
     if (!contextMenu || !user) return;
-    reportComment(
-      contextMenu.comment.text,
-      contextMenu.comment.userName,
-      obra.title,
-      user.email,
-    );
+    try {
+      await api.patch(`/comments/${contextMenu.comment.id}/report`);
+    } catch (e) {
+      console.error("Error al reportar:", e);
+    }
     setContextMenu(null);
     alert("Comentario reportado al administrador.");
   };
@@ -97,7 +75,7 @@ const ObraPopup = ({ obra, onClose, onLike, onComment }) => {
           <p className="text-gray-300 mb-6">{obra.description}</p>
 
           <div className="flex items-center gap-2 mb-6">
-            <button onClick={() => onLike(obra.id)} className="flex items-center gap-1">
+            <button onClick={() => onLike(obra.id, user?.email)} className="flex items-center gap-1">
               {liked ? <HeartSolid /> : <span className="text-gray-400 hover:text-pink-500"><HeartOutline /></span>}
             </button>
             <span className="text-gray-400">{obra.likes?.length || 0} reacciones</span>

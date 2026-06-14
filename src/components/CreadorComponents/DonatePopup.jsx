@@ -21,11 +21,12 @@ const DonatePopup = ({ creator, onClose, onDonate }) => {
             ¡Gracias por apoyar a {creator.name}!
           </h2>
           <p className="text-gray-400 mb-6">
-            Tu contribución de ${amount.toLocaleString()} ayuda a seguir creando contenido.
+            Tu contribución de ${amount.toLocaleString()} ayuda a seguir creando
+            contenido.
           </p>
           <button
             onClick={onClose}
-            className="bg-pink-700 hover:bg-pink-800 text-white font-bold py-2 px-8 rounded-lg transition-colors"
+            className="bg-green-700 hover:bg-pink-800 text-white font-bold py-2 px-8 rounded-lg transition-colors"
           >
             Cerrar
           </button>

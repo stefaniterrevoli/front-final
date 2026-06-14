@@ -1,16 +1,9 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 const CreadoresContext = createContext();
 const SUBS_KEY = "creativa_subs";
 const DONS_KEY = "creativa_donations";
-
-function getUsers() {
-  try {
-    return JSON.parse(localStorage.getItem("creativa_users") || "[]");
-  } catch {
-    return [];
-  }
-}
 
 function loadSubs() {
   try {
@@ -35,10 +28,33 @@ function save(key, data) {
 }
 
 export function CreadoresProvider({ children }) {
+  const [creators, setCreators] = useState([]);
   const [subs, setSubs] = useState(loadSubs);
   const [dons, setDons] = useState(loadDons);
 
-  const creators = getUsers().filter((u) => u.role !== "admin");
+  const loadCreators = async () => {
+    try {
+      const response = await api.get("/creators");
+      const creatorsList = response.data.map((c) => ({
+        id: c.creatorId,
+        userId: c.userId,
+        name: c.artisticName,
+        email: c.email,
+        avatar: null,
+        artisticName: c.artisticName,
+        biography: c.biography,
+        socialMedia: c.socialMedia,
+        totalFollowers: c.totalFollowers,
+      }));
+      setCreators(creatorsList);
+    } catch (error) {
+      console.error("Error loading creators:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadCreators();
+  }, []);
 
   const isSubscribed = (userId, creatorId) =>
     subs.some((s) => s.userId === userId && s.creatorId === creatorId);

@@ -1,46 +1,20 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAdmin } from "../../context/AdminContext";
 
 const AdminNoticias = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState("");
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
+  const [imageUrl, setImageUrl] = useState("");
   const { data, addNoticia } = useAdmin();
-
-  const MAX_IMG = 500 * 1024;
-
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > MAX_IMG) {
-      alert("La imagen es muy grande. Máximo 500KB.");
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setImage(ev.target.result);
-      setImagePreview(ev.target.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const clearImage = () => {
-    setImage("");
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
     try {
-      addNoticia({ title: title.trim(), content: content.trim(), image });
+      addNoticia({ title: title.trim(), content: content.trim(), image: imageUrl.trim() });
       setTitle("");
       setContent("");
-      clearImage();
+      setImageUrl("");
     } catch (err) {
       console.error("Error al crear noticia:", err);
       alert("Ocurrió un error al crear la noticia.");
@@ -66,24 +40,17 @@ const AdminNoticias = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-white mb-1">Imagen (opcional)</label>
+          <label className="block text-white mb-1">URL de imagen (opcional)</label>
           <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImage}
-            className="w-full p-3 rounded bg-black text-white border border-purple-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-pink-700 file:text-white hover:file:bg-pink-800 cursor-pointer"
+            type="url"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://ejemplo.com/imagen.jpg"
+            className="w-full p-3 rounded bg-black text-white border border-purple-700 focus:outline-none focus:border-pink-700"
           />
-          {imagePreview && (
+          {imageUrl && (
             <div className="relative mt-2 inline-block">
-              <img src={imagePreview} alt="vista previa" className="h-28 rounded-lg object-cover" />
-              <button
-                type="button"
-                onClick={clearImage}
-                className="absolute -top-2 -right-2 bg-red-700 text-white w-6 h-6 rounded-full text-sm hover:bg-red-800"
-              >
-                ✕
-              </button>
+              <img src={imageUrl} alt="vista previa" className="h-28 rounded-lg object-cover" />
             </div>
           )}
         </div>

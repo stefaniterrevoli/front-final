@@ -15,7 +15,9 @@ const Home = () => {
           Bienvenido a <span className="text-pink-700">creAtiva</span>
         </h2>
         <p className="text-lg text-gray-400">
-          Explora eventos, noticias, obras y creadores.
+          Un sitio donde puedes explorar eventos, conocer a artistas locales y
+          nuevas obras dentro de esta industria emergente en nuestra comunidad
+          latinoamericana.
         </p>
       </div>
     </section>

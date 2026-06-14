@@ -1,23 +1,36 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import api from "../services/api";
 
-const ADMIN_KEY = "creativa_admin_data";
 const EventosContext = createContext();
 
-function load() {
-  try {
-    const stored = localStorage.getItem(ADMIN_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      return data.eventos || [];
-    }
-  } catch {}
-  return [];
-}
-
 export function EventosProvider({ children }) {
-  const [eventos, setEventos] = useState(load);
+  const [eventos, setEventos] = useState([]);
 
-  const refresh = () => setEventos(load());
+  const loadEventos = async () => {
+    try {
+      const response = await api.get("/events");
+      const mapped = response.data.map((e) => ({
+        id: e.event_id,
+        title: e.title,
+        description: e.description,
+        latitude: e.latitude,
+        longitude: e.longitude,
+        commune: e.commune,
+        imageUrl: e.image_url,
+        date: e.event_date ? new Date(e.event_date).toLocaleDateString() : "",
+        status: e.status,
+      }));
+      setEventos(mapped);
+    } catch (error) {
+      console.error("Error loading events:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadEventos();
+  }, []);
+
+  const refresh = () => loadEventos();
 
   return (
     <EventosContext.Provider value={{ eventos, refresh }}>

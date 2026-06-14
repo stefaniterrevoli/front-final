@@ -18,49 +18,49 @@ const Avatar = ({ name, avatar }) => {
   );
 };
 
-const CreadorCard = ({ creator, isSubbed, onSubscribe, onUnsubscribe, onDonate, currentUser }) => {
+const CreadorCard = ({
+  creator,
+  isSubbed,
+  onSubscribe,
+  onUnsubscribe,
+  onDonate,
+}) => {
   const [showDonate, setShowDonate] = useState(false);
 
   return (
     <>
-      <div className="bg-purple-950 rounded-xl p-6 border border-purple-800 hover:border-pink-700 transition-all text-center">
+      <div className="bg-yellow-100 rounded-xl p-6 border border-purple-800 hover:border-pink-700 transition-all text-center">
         <div className="flex justify-center mb-4">
           <Avatar name={creator.name} avatar={creator.avatar} />
         </div>
-        <h3 className="text-white font-bold text-xl">{creator.name}</h3>
+        <h3 className=" font-titulos text-black font-bold text-xl">
+          {creator.name}
+        </h3>
         <p className="text-gray-400 text-sm">{creator.email}</p>
 
         <div className="mt-4 flex flex-col gap-2">
           {isSubbed ? (
             <>
               <button
-                onClick={() => onUnsubscribe(creator.id)}
-                className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
-              >
-                Suscrito - Cancelar
-              </button>
-              <button
                 onClick={() => setShowDonate(true)}
-                className="bg-pink-700 hover:bg-pink-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
+                className="bg-black hover:bg-pink-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
               >
                 Donar
               </button>
+              <button
+                onClick={() => onUnsubscribe(creator.id)}
+                className="bg-black hover:bg-red-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
+              >
+                Suscrito - Cancelar
+              </button>
             </>
           ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={() => onSubscribe(creator.id, 2000)}
-                className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
-              >
-                $2.000/mes
-              </button>
-              <button
-                onClick={() => onSubscribe(creator.id, 5000)}
-                className="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
-              >
-                $5.000/mes
-              </button>
-            </div>
+            <button
+              onClick={() => onSubscribe(creator.id, 2000)}
+              className="bg-purple-700 hover:bg-black-800 text-white font-bold py-2 rounded-lg text-sm transition-colors"
+            >
+              Suscribirse - $2.000/mes
+            </button>
           )}
         </div>
       </div>

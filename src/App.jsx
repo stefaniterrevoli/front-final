@@ -30,38 +30,10 @@ const App = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route
-              path="/eventos"
-              element={
-                <ProtectedRoute>
-                  <EventosPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/noticias"
-              element={
-                <ProtectedRoute>
-                  <NoticiasPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/obras"
-              element={
-                <ProtectedRoute>
-                  <ObrasPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/creadores"
-              element={
-                <ProtectedRoute>
-                  <CreadoresPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/eventos" element={<EventosPage />} />
+            <Route path="/noticias" element={<NoticiasPage />} />
+            <Route path="/obras" element={<ObrasPage />} />
+            <Route path="/creadores" element={<CreadoresPage />} />
             <Route
               path="/perfil"
               element={

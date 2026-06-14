@@ -1,4 +1,5 @@
 import { ProfileProvider, useProfile } from "../context/ProfileContext";
+import { ObrasProvider } from "../context/ObrasContext";
 import ProfileHeader from "../components/ProfileComponents/ProfileHeader";
 import ProfileStats from "../components/ProfileComponents/ProfileStats";
 import ProfileSubs from "../components/ProfileComponents/ProfileSubs";
@@ -6,12 +7,12 @@ import ProfileDonate from "../components/ProfileComponents/ProfileDonate";
 import ProfileContent from "../components/ProfileComponents/ProfileContent";
 
 const ProfileContentPage = () => {
-  const { name, username, avatar, bio, stats, subs, donations, content, updateAvatar } = useProfile();
+  const { name, username, avatar, bio, stats, subs, donations, content, updateAvatar, updateProfile } = useProfile();
 
   return (
     <section className="min-h-screen bg-black text-white font-textos">
       <div className="max-w-4xl mx-auto px-4 py-10">
-        <ProfileHeader name={name} username={username} bio={bio} avatar={avatar} onAvatarChange={updateAvatar} />
+        <ProfileHeader name={name} username={username} bio={bio} avatar={avatar} onAvatarChange={updateAvatar} onUpdateProfile={updateProfile} />
         <ProfileStats stats={stats} />
         <div className="space-y-10">
           <ProfileSubs subs={subs} />
@@ -25,7 +26,9 @@ const ProfileContentPage = () => {
 
 const ProfilePage = () => (
   <ProfileProvider>
-    <ProfileContentPage />
+    <ObrasProvider>
+      <ProfileContentPage />
+    </ObrasProvider>
   </ProfileProvider>
 );
 
