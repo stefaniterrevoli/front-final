@@ -2,49 +2,24 @@ import { createContext, useContext, useState, useEffect } from "react";
 import api from "../services/api";
 
 const CreadoresContext = createContext();
-const SUBS_KEY = "creativa_subs";
-const DONS_KEY = "creativa_donations";
-
-function loadSubs() {
-  try {
-    return JSON.parse(localStorage.getItem(SUBS_KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function loadDons() {
-  try {
-    return JSON.parse(localStorage.getItem(DONS_KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function save(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch {}
-}
 
 export function CreadoresProvider({ children }) {
   const [creators, setCreators] = useState([]);
-  const [subs, setSubs] = useState(loadSubs);
-  const [dons, setDons] = useState(loadDons);
 
   const loadCreators = async () => {
     try {
       const response = await api.get("/creators");
-      const creatorsList = response.data.map((c) => ({
-        id: c.creatorId,
-        userId: c.userId,
-        name: c.artisticName,
-        email: c.email,
-        avatar: null,
-        artisticName: c.artisticName,
-        biography: c.biography,
-        socialMedia: c.socialMedia,
-        totalFollowers: c.totalFollowers,
+      const list = response.data.creators || response.data;
+      const creatorsList = (Array.isArray(list) ? list : []).map((c) => ({
+        creatorId: c.creator_id || c.creatorId,
+        userId: c.user_id || c.userId,
+        name: c.artistic_name || c.artisticName,
+        email: c.email || "",
+        avatar: c.image_url || null,
+        artisticName: c.artistic_name || c.artisticName,
+        biography: c.biography || "",
+        socialMedia: c.social_media || c.socialMedia || "",
+        totalFollowers: c.total_followers || c.totalFollowers || 0,
       }));
       setCreators(creatorsList);
     } catch (error) {
@@ -56,33 +31,49 @@ export function CreadoresProvider({ children }) {
     loadCreators();
   }, []);
 
-  const isSubscribed = (userId, creatorId) =>
-    subs.some((s) => s.userId === userId && s.creatorId === creatorId);
-
-  const subscribe = (userId, creatorId, amount) => {
-    const next = [...subs, { userId, creatorId, amount, date: new Date().toLocaleDateString() }];
-    setSubs(next);
-    save(SUBS_KEY, next);
+  const isSubscribed = async (userId, creatorId) => {
+    try {
+      const res = await api.get(`/followers/check?userId=${userId}&creatorId=${creatorId}`);
+      return res.data.following;
+    } catch {
+      return false;
+    }
   };
 
-  const unsubscribe = (userId, creatorId) => {
-    const next = subs.filter((s) => !(s.userId === userId && s.creatorId === creatorId));
-    setSubs(next);
-    save(SUBS_KEY, next);
+  const subscribe = async (userId, creatorId) => {
+    try {
+      await api.post("/followers", { userId, creatorId });
+      loadCreators();
+    } catch (error) {
+      console.error("Error subscribing:", error);
+    }
   };
 
-  const donate = (userId, creatorId, amount, message) => {
-    const next = [...dons, { userId, creatorId, amount, message, date: new Date().toLocaleDateString() }];
-    setDons(next);
-    save(DONS_KEY, next);
+  const unsubscribe = async (userId, creatorId) => {
+    try {
+      await api.delete(`/followers/${creatorId}`);
+      loadCreators();
+    } catch (error) {
+      console.error("Error unsubscribing:", error);
+    }
   };
 
-  const subscriberCount = (creatorId) =>
-    subs.filter((s) => s.creatorId === creatorId).length;
+  const donate = async (donorUserId, creatorId, amount, message) => {
+    try {
+      await api.post("/donations", { donorUserId, creatorId, amount, message });
+    } catch (error) {
+      console.error("Error donating:", error);
+    }
+  };
+
+  const subscriberCount = (creatorId) => {
+    const c = creators.find((cr) => cr.creatorId === creatorId);
+    return c?.totalFollowers || 0;
+  };
 
   return (
     <CreadoresContext.Provider
-      value={{ creators, subs, dons, isSubscribed, subscribe, unsubscribe, donate, subscriberCount }}
+      value={{ creators, isSubscribed, subscribe, unsubscribe, donate, subscriberCount, loadCreators }}
     >
       {children}
     </CreadoresContext.Provider>

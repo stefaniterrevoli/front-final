@@ -9,15 +9,17 @@ export function EventosProvider({ children }) {
   const loadEventos = async () => {
     try {
       const response = await api.get("/events");
-      const mapped = response.data.map((e) => ({
-        id: e.event_id,
+      const list = response.data.events || response.data;
+      const mapped = (Array.isArray(list) ? list : []).map((e) => ({
+        id: e.eventId || e.event_id,
         title: e.title,
         description: e.description,
         latitude: e.latitude,
         longitude: e.longitude,
+        region: e.region,
         commune: e.commune,
-        imageUrl: e.image_url,
-        date: e.event_date ? new Date(e.event_date).toLocaleDateString() : "",
+        imageUrl: e.imageUrl || e.image_url,
+        date: e.eventDate ? new Date(e.eventDate).toLocaleDateString() : e.event_date ? new Date(e.event_date).toLocaleDateString() : "",
         status: e.status,
       }));
       setEventos(mapped);

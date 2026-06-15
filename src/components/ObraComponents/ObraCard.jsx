@@ -34,7 +34,7 @@ const ObraCard = ({ obra, onClick, onLike, currentUser }) => {
       className="bg-yellow-150 rounded-xl overflow-hidden border border-purple-800 hover:border-pink-700 transition-all cursor-pointer group"
       onClick={() => onClick(obra)}
     >
-      <div className="h-48 bg-gradient-to-br from-purple-800 to-pink-900 flex items-center justify-center text-6xl">
+      <div className="h-40 sm:h-48 bg-gradient-to-br from-purple-800 to-pink-900 flex items-center justify-center text-4xl sm:text-6xl">
         {obra.image ? (
           <img
             src={obra.image}
@@ -46,7 +46,7 @@ const ObraCard = ({ obra, onClick, onLike, currentUser }) => {
         )}
       </div>
       <div className="p-4">
-        <h3 className=" font-titulos text-white font-bold text-lg">
+        <h3 className=" font-titulos text-yellow-400 font-bold text-lg">
           {obra.title}
         </h3>
         <p className="text-gray-400 text-sm">por {obra.artistName}</p>

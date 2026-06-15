@@ -1,11 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Jersey+10&family=Mozilla+Headline:wght@200..700&family=Pixelify+Sans:wght@400..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
 @import "tailwindcss";
 
 @theme {
   /* Crea una utilidad 'font-titulos' para Pixelify Sans */
   --font-titulos: "Pixelify Sans", sans-serif;
 
-  /* Crea una utilidad 'font-textos' para Ubuntu */
-  --font-textos: "Ubuntu", sans-serif;
+  /* Crea una utilidad 'font-textos' para Jersey 10 */
+  --font-textos: "Mozilla Headline", sans-serif;
+
+  --radius-none: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+}
+
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
+html {
+  font-size: clamp(14px, 1.1vw, 18px);
 }

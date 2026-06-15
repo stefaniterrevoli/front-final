@@ -16,11 +16,11 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
   ];
 
   return (
-    <nav className="bg-purple-950 text-white p-4">
+    <nav className="bg-black text-white p-4">
       <div className="container mx-auto flex items-center justify-between">
-        <Link to="/" className="font-titulos text-5xl font-bold text-white">
+        <Link to="/" className="font-titulos text-3xl sm:text-5xl font-bold text-white">
           <span className="normal-case">cre</span>
-          <span className="text-pink-700 uppercase">A</span>
+          <span className="text-green-400 uppercase">A</span>
           <span className="normal-case">tiva</span>
         </Link>
 

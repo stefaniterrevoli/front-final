@@ -1,52 +1,36 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiSearch } from "react-icons/hi";
+import api from "../services/api";
 
 const toStr = (v) => (v || "").toString().toLowerCase();
-
-function searchAll(query) {
-  if (!query.trim()) return [];
-  const q = query.toLowerCase();
-
-  const results = [];
-
-  try {
-    const admin = JSON.parse(localStorage.getItem("creativa_admin_data") || "{}");
-    (admin.eventos || []).forEach((e) => {
-      if (toStr(e.title).includes(q) || toStr(e.description).includes(q) || toStr(e.location).includes(q))
-        results.push({ ...e, _type: "Evento", _route: "/eventos" });
-    });
-    (admin.noticias || []).forEach((n) => {
-      if (toStr(n.title).includes(q) || toStr(n.content).includes(q))
-        results.push({ ...n, _type: "Noticia", _route: "/noticias" });
-    });
-  } catch {}
-
-  try {
-    const obras = JSON.parse(localStorage.getItem("creativa_obras") || "[]");
-    obras.forEach((o) => {
-      if (toStr(o.title).includes(q) || toStr(o.artistName).includes(q) || toStr(o.description).includes(q))
-        results.push({ ...o, _type: "Obra", _route: "/obras" });
-    });
-  } catch {}
-
-  try {
-    const users = JSON.parse(localStorage.getItem("creativa_users") || "[]");
-    users.forEach((u) => {
-      if (toStr(u.name).includes(q) || toStr(u.email).includes(q))
-        results.push({ name: u.name, email: u.email, avatar: u.avatar, _type: "Creador", _route: "/creadores" });
-    });
-  } catch {}
-
-  return results.slice(0, 8);
-}
 
 const SearchBar = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
+  const [cached, setCached] = useState({ creators: [], artworks: [] });
+  const loaded = useRef(false);
   const ref = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loaded.current) return;
+    loaded.current = true;
+    const fetchData = async () => {
+      try {
+        const [cr, aw] = await Promise.all([
+          api.get("/creators"),
+          api.get("/artworks"),
+        ]);
+        setCached({
+          creators: cr.data.creators || [],
+          artworks: aw.data.artworks || [],
+        });
+      } catch {}
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const handler = (e) => {
@@ -59,9 +43,46 @@ const SearchBar = () => {
   const handleChange = (e) => {
     const v = e.target.value;
     setQuery(v);
-    const res = searchAll(v);
-    setResults(res);
-    setOpen(v.trim().length > 0);
+    if (!v.trim()) {
+      setResults([]);
+      setOpen(false);
+      return;
+    }
+    const q = v.toLowerCase();
+    const res = [];
+
+    try {
+      const admin = JSON.parse(localStorage.getItem("creativa_admin_data") || "{}");
+      (admin.eventos || []).forEach((ev) => {
+        if (toStr(ev.title).includes(q) || toStr(ev.description).includes(q) || toStr(ev.location).includes(q))
+          res.push({ ...ev, _type: "Evento", _route: "/eventos" });
+      });
+      (admin.noticias || []).forEach((n) => {
+        if (toStr(n.title).includes(q) || toStr(n.content).includes(q))
+          res.push({ ...n, _type: "Noticia", _route: "/noticias" });
+      });
+    } catch {}
+
+    cached.artworks.forEach((o) => {
+      if (toStr(o.title).includes(q) || toStr(o.artist_name || o.artisticName || o.artistName).includes(q) || toStr(o.description).includes(q))
+        res.push({ ...o, _type: "Obra", _route: "/obras" });
+    });
+
+    cached.creators.forEach((c) => {
+      const name = c.artistic_name || c.artisticName || c.name;
+      if (toStr(name).includes(q) || toStr(c.email).includes(q))
+        res.push({
+          name,
+          email: c.email,
+          avatar: c.image_url || null,
+          artisticName: name,
+          _type: "Creador",
+          _route: "/creadores",
+        });
+    });
+
+    setResults(res.slice(0, 8));
+    setOpen(true);
   };
 
   const handleSelect = (item) => {
@@ -104,6 +125,7 @@ const SearchBar = () => {
               <p className={`text-xs ${typeColors[item._type] || "text-gray-400"}`}>
                 {item._type}
                 {item.artistName && ` · ${item.artistName}`}
+                {item.artist_name && ` · ${item.artist_name}`}
                 {item.location && ` · ${item.location}`}
               </p>
             </button>

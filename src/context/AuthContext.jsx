@@ -28,10 +28,10 @@ export function AuthProvider({ children }) {
       name: fullName,
       email: userData.email,
       password: userData.password,
-      commune: userData.commune || "",
-      phone: userData.phone || "",
-      address: userData.address || "",
-      age: parseInt(userData.born || userData.age) || 18,
+      commune: userData.commune,
+      phone: userData.phone,
+      address: userData.address,
+      age: new Date().getFullYear() - (userData.born || userData.age),
     });
     const data = response.data;
     const newUser = {
@@ -52,6 +52,7 @@ export function AuthProvider({ children }) {
       name: data.name,
       email: data.email,
       role: data.role,
+      avatar: data.imageUrl || null,
     };
     localStorage.setItem("token", data.token);
     localStorage.setItem("creativa_user", JSON.stringify(userData));

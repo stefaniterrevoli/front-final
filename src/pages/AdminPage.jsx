@@ -4,10 +4,12 @@ import AdminReports from "../components/AdminComponents/AdminReports";
 import AdminObras from "../components/AdminComponents/AdminObras";
 import AdminNoticias from "../components/AdminComponents/AdminNoticias";
 import AdminEventos from "../components/AdminComponents/AdminEventos";
+import AdminChapters from "../components/AdminComponents/AdminChapters";
 
 const tabs = [
   { id: "reportes", label: "Reportes", icon: "" },
   { id: "obras", label: "Obras", icon: "" },
+  { id: "capitulos", label: "Capítulos", icon: "" },
   { id: "noticias", label: "Noticias", icon: "" },
   { id: "eventos", label: "Eventos", icon: "" },
 ];
@@ -18,7 +20,7 @@ const AdminContent = () => {
   return (
     <section className="min-h-screen bg-black text-white font-textos">
       <div className="max-w-5xl mx-auto px-4 py-10">
-        <h1 className="font-titulos text-5xl text-white mb-8">
+        <h1 className="font-titulos text-3xl sm:text-5xl text-white mb-8">
           Panel de Administración
         </h1>
 
@@ -40,6 +42,7 @@ const AdminContent = () => {
 
         {activeTab === "reportes" && <AdminReports />}
         {activeTab === "obras" && <AdminObras />}
+        {activeTab === "capitulos" && <AdminChapters />}
         {activeTab === "noticias" && <AdminNoticias />}
         {activeTab === "eventos" && <AdminEventos />}
       </div>

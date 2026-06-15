@@ -3,27 +3,17 @@ import { ObrasProvider, useObras } from "../context/ObrasContext";
 import { useAuth } from "../context/AuthContext";
 import ObraCard from "../components/ObraComponents/ObraCard";
 import ObraPopup from "../components/ObraComponents/ObraPopup";
-import UploadObra from "../components/ObraComponents/UploadObra";
 
 const ObrasContent = () => {
   const [selectedObra, setSelectedObra] = useState(null);
-  const [showUpload, setShowUpload] = useState(false);
-  const { obras, toggleLike, addComment } = useObras();
+  const { obras, toggleLike } = useObras();
   const { user } = useAuth();
 
   return (
     <section className="min-h-screen bg-black text-white font-textos">
       <div className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-titulos text-5xl">Obras</h1>
-          {user && (
-            <button
-              onClick={() => setShowUpload(true)}
-              className="bg-pink-700 hover:bg-pink-800 text-white font-bold px-5 py-2.5 rounded-lg transition-colors"
-            >
-              + Subir Obra
-            </button>
-          )}
+          <h1 className="font-titulos text-3xl sm:text-5xl">Obras</h1>
         </div>
 
         {obras.length === 0 ? (
@@ -46,12 +36,8 @@ const ObrasContent = () => {
           <ObraPopup
             obra={selectedObra}
             onClose={() => setSelectedObra(null)}
-            onLike={toggleLike}
-            onComment={addComment}
           />
         )}
-
-        {showUpload && <UploadObra onClose={() => setShowUpload(false)} />}
       </div>
     </section>
   );

@@ -9,12 +9,15 @@ export function ObrasProvider({ children }) {
   const loadObras = async () => {
     try {
       const response = await api.get("/artworks");
-      const mapped = response.data.map((o) => ({
+      const list = response.data.artworks || response.data;
+      const mapped = (Array.isArray(list) ? list : []).map((o) => ({
         id: o.artwork_id,
         artworkId: o.artwork_id,
         title: o.title,
         description: o.description,
-        image: o.image_url ? `http://localhost:3000${o.image_url}` : "",
+        artworkType: o.artwork_type,
+        image: Array.isArray(o.images) && o.images.length > 0 ? o.images[0] : "",
+        images: o.images || [],
         artistName: o.artist_name || "",
         artistEmail: o.artist_email || "",
         creatorId: o.creator_id,
@@ -41,14 +44,16 @@ export function ObrasProvider({ children }) {
 
       const userData = JSON.parse(localStorage.getItem("creativa_user") || "{}");
       const userRes = await api.get(`/creators/${userData.userId}`);
-      const creatorId = userRes.data.creatorId;
+      const creatorId = userRes.data.creatorId || userRes.data.creator_id;
 
       await api.post("/artworks", {
         creatorId,
         title: obra.title,
         description: obra.description,
         artworkType: obra.artworkType || "obra",
-        imageUrl: obra.image || null,
+        publicationDate: new Date().toISOString(),
+        status: "publicada",
+        images: obra.image ? [obra.image] : [],
       });
       await loadObras();
     } catch (error) {
@@ -56,8 +61,21 @@ export function ObrasProvider({ children }) {
     }
   };
 
-  const toggleLike = async (obraId, userId) => {
-    console.log("Like toggled - backend pending implementation");
+  const toggleLike = async (obraId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const userData = JSON.parse(localStorage.getItem("creativa_user") || "{}");
+      await api.post("/reactions", {
+        artworkId: obraId,
+        userId: userData.userId,
+        reactionType: "like",
+        reactionDate: new Date().toISOString(),
+      });
+      await loadObras();
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   const addComment = async (obraId, comment) => {
@@ -79,8 +97,26 @@ export function ObrasProvider({ children }) {
     }
   };
 
+  const fetchComments = async (artworkId) => {
+    try {
+      const res = await api.get(`/comments/artworks/${artworkId}`);
+      return res.data.comments || res.data;
+    } catch {
+      return [];
+    }
+  };
+
+  const fetchReactions = async (artworkId) => {
+    try {
+      const res = await api.get(`/reactions/artworks/${artworkId}`);
+      return res.data.reactions || res.data;
+    } catch {
+      return [];
+    }
+  };
+
   return (
-    <ObrasContext.Provider value={{ obras, addObra, toggleLike, addComment, loadObras }}>
+    <ObrasContext.Provider value={{ obras, addObra, toggleLike, addComment, loadObras, fetchComments, fetchReactions }}>
       {children}
     </ObrasContext.Provider>
   );

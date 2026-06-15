@@ -122,6 +122,20 @@ export function AdminProvider({ children }) {
       ],
     }));
 
+  const editNoticia = (id, updates) =>
+    update((prev) => ({
+      ...prev,
+      noticias: prev.noticias.map((n) =>
+        n.id === id ? { ...n, ...updates } : n
+      ),
+    }));
+
+  const deleteNoticia = (id) =>
+    update((prev) => ({
+      ...prev,
+      noticias: prev.noticias.filter((n) => n.id !== id),
+    }));
+
   const addEvento = (evento) =>
     update((prev) => ({
       ...prev,
@@ -133,7 +147,7 @@ export function AdminProvider({ children }) {
 
   return (
     <AdminContext.Provider
-      value={{ data, resolveReport, approveObra, rejectObra, addNoticia, addEvento }}
+      value={{ data, resolveReport, approveObra, rejectObra, addNoticia, editNoticia, deleteNoticia, addEvento }}
     >
       {children}
     </AdminContext.Provider>
