@@ -1,16 +1,38 @@
-# React + Vite
+​##​Infraestructura del Proyecto
+##Frontend (front_final)
+src/
+├── main.jsx, App.jsx, index.css
+│
+├── layouts/          # Navbar, Sidebar, Footer
+├── pages/            # 9 rutas
+│   ├── Home          /
+│   ├── LoginPage     /login
+│   ├── RegisterPage  /register
+│   ├── EventosPage   /eventos
+│   ├── NoticiasPage  /noticias
+│   ├── ObrasPage     /obras
+│   ├── CreadoresPage /creadores
+│   ├── ProfilePage   /perfil      (ProtectedRoute)
+│   └── AdminPage     /admin       (AdminRoute)
+│
+├── components/
+│   ├── AdminComponents/   # 5 (Chapters, Eventos, Noticias, Obras, Reports)
+│   ├── CreadorComponents/ # 2 (Card, DonatePopup)
+│   ├── EventoComponents/  # 2 (Card, Popup)
+│   ├── ObraComponents/    # 4 (Card, Popup, ChapterList, UploadObra)
+│   ├── ProfileComponents/ # 8 (Header, Image, Content, Stats, Subs, Donate, Reports, BecomeCreator)
+│   └── Carousel, SearchBar, PopupInicio, ProtectedRoute, AdminRoute
+│
+├── context/          # 6 providers
+│   ├── AuthContext       login/logout/register + token
+│   ├── AdminContext      admin mock data (localStorage)
+│   ├── CreadoresContext  GET /creators
+│   ├── EventosContext    GET /events
+│   ├── ObrasContext      GET /artworks
+│   └── ProfileContext    avatar, stats, donaciones, seguidores, reportes
+│
+└── services/
+    └── api.js         # Axios → http://localhost:3000/creativa/api/v1
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Localhost:5173
+Stack: React 19 + Vite 8 + Tailwind 4 + react-router-dom 7 + Leaflet + Axios
