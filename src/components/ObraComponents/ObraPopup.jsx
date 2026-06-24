@@ -103,6 +103,8 @@ const ObraPopup = ({ obra, onClose, onLike, onComment }) => {
 
   if (!obra) return null;
 
+  const safeImages = Array.isArray(obra.images) ? obra.images : [];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
@@ -125,25 +127,14 @@ const ObraPopup = ({ obra, onClose, onLike, onComment }) => {
         <div className="p-6">
           <h2 className="font-titulos text-2xl sm:text-3xl text-white mb-2 break-words">{obra.title}</h2>
           <p className="text-pink-400 text-sm mb-4">por {obra.artistName}</p>
+          {obra.genre && (
+            <span className="inline-block mb-3 text-xs font-bold px-2 py-0.5 bg-pink-800 text-pink-200">
+              {obra.genre}
+            </span>
+          )}
           <p className="text-gray-300 mb-6">{obra.description}</p>
 
-          {obra.images?.length > 1 && (
-            <div className="mb-6">
-              <h3 className="text-white font-bold mb-3">Galería</h3>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {obra.images.map((url, i) => (
-                  <img
-                    key={i}
-                    src={url}
-                    alt={`${obra.title} ${i + 1}`}
-                    className="h-24 w-24 object-cover border border-purple-700 flex-shrink-0"
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          <ChapterList artworkId={obra.id} images={obra.images || []} />
+          <ChapterList artworkId={obra.id} artworkTitle={obra.title} images={safeImages} />
 
           <div className="flex items-center gap-2 mb-6">
             <button onClick={handleLike} className="flex items-center gap-1">

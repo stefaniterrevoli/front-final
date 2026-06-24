@@ -4,12 +4,9 @@ import AdminReports from "../components/AdminComponents/AdminReports";
 import AdminObras from "../components/AdminComponents/AdminObras";
 import AdminNoticias from "../components/AdminComponents/AdminNoticias";
 import AdminEventos from "../components/AdminComponents/AdminEventos";
-import AdminChapters from "../components/AdminComponents/AdminChapters";
-
 const tabs = [
   { id: "reportes", label: "Reportes", icon: "" },
   { id: "obras", label: "Obras", icon: "" },
-  { id: "capitulos", label: "Capítulos", icon: "" },
   { id: "noticias", label: "Noticias", icon: "" },
   { id: "eventos", label: "Eventos", icon: "" },
 ];
@@ -42,7 +39,6 @@ const AdminContent = () => {
 
         {activeTab === "reportes" && <AdminReports />}
         {activeTab === "obras" && <AdminObras />}
-        {activeTab === "capitulos" && <AdminChapters />}
         {activeTab === "noticias" && <AdminNoticias />}
         {activeTab === "eventos" && <AdminEventos />}
       </div>

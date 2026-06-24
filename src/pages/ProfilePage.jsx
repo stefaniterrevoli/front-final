@@ -5,12 +5,13 @@ import ProfileHeader from "../components/ProfileComponents/ProfileHeader";
 import ProfileStats from "../components/ProfileComponents/ProfileStats";
 import ProfileSubs from "../components/ProfileComponents/ProfileSubs";
 import ProfileDonate from "../components/ProfileComponents/ProfileDonate";
+import ProfileChapters from "../components/ProfileComponents/ProfileChapters";
 import ProfileContent from "../components/ProfileComponents/ProfileContent";
 import ProfileReports from "../components/ProfileComponents/ProfileReports";
 import BecomeCreatorModal from "../components/ProfileComponents/BecomeCreatorModal";
 
 const ProfileContentPage = () => {
-  const { isCreator, name, username, avatar, bio, obras, followers, following, donations, totalLikes, updateAvatar, updateProfile, createCreatorProfile, addArtwork, updateArtwork, reloadProfile } = useProfile();
+  const { isCreator, name, username, avatar, bio, obras, followers, following, donations, totalLikes, chapterSales, updateAvatar, updateProfile, createCreatorProfile, addArtwork, updateArtwork, reloadProfile } = useProfile();
   const [showCreatorModal, setShowCreatorModal] = useState(false);
 
   return (
@@ -24,6 +25,7 @@ const ProfileContentPage = () => {
             <div className="space-y-10">
               <ProfileSubs followers={followers} following={following} />
               <ProfileDonate donations={donations} />
+              <ProfileChapters sales={chapterSales} />
               <ProfileContent obras={obras} addArtwork={addArtwork} updateArtwork={updateArtwork} reloadProfile={reloadProfile} />
             </div>
             <div className="mt-10">

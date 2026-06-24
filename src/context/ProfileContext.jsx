@@ -28,6 +28,7 @@ export const ProfileProvider = ({ children }) => {
   const [following, setFollowing] = useState([]);
   const [donations, setDonations] = useState([]);
   const [totalLikes, setTotalLikes] = useState(0);
+  const [chapterSales, setChapterSales] = useState([]);
 
   const fetchProfile = useCallback(async () => {
     if (!user?.userId) return;
@@ -78,6 +79,9 @@ export const ProfileProvider = ({ children }) => {
         setFollowers([]);
         setDonations([]);
       }
+
+      const sales = JSON.parse(localStorage.getItem("chapter_sales") || "[]");
+      setChapterSales(sales);
 
       try {
         const folRes = await api.get(`/followers/user/${user.userId}`);
@@ -167,7 +171,7 @@ export const ProfileProvider = ({ children }) => {
         creatorId: cId,
         title: artworkData.title,
         description: artworkData.description,
-        artworkType: "obra",
+        artworkType: artworkData.genre || "obra",
         publicationDate: pubDate,
         status: "pendiente",
         images,
@@ -202,7 +206,7 @@ export const ProfileProvider = ({ children }) => {
       await api.put(`/artworks/${artworkId}`, {
         title: artworkData.title,
         description: artworkData.description,
-        artworkType: "obra",
+        artworkType: artworkData.genre || "obra",
         publicationDate: pubDate,
         status: currentStatus,
         images,
@@ -243,13 +247,14 @@ export const ProfileProvider = ({ children }) => {
     following,
     donations,
     totalLikes,
+    chapterSales,
     updateAvatar,
     updateProfile,
     createCreatorProfile,
     addArtwork,
     updateArtwork,
     reloadProfile: fetchProfile,
-  }), [isCreator, profileName, profileUsername, avatar, profileBio, user, userArtworks, followers, following, donations, totalLikes, creatorId, fetchProfile]);
+  }), [isCreator, profileName, profileUsername, avatar, profileBio, user, userArtworks, followers, following, donations, totalLikes, chapterSales, creatorId, fetchProfile]);
 
   return (
     <ProfileContext.Provider value={value}>

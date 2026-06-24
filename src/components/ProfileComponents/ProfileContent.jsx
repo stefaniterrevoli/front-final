@@ -16,13 +16,17 @@ const ProfileContent = ({ obras, addArtwork, updateArtwork, reloadProfile }) => 
   const [editingStatus, setEditingStatus] = useState(null);
   const [artTitle, setArtTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [genre, setGenre] = useState("");
   const [chapters, setChapters] = useState(emptyChapters());
+
+  const GENRES = ["Romance", "Aventura", "Acción", "Fantasía", "Paranormal", "Ciencia Ficción", "Drama", "Comedia", "Terror", "Poesía", "Otro"];
 
   const overLimit = description.length > MAX_DESC || artTitle.length > MAX_TITLE;
 
   const resetForm = () => {
     setArtTitle("");
     setDescription("");
+    setGenre("");
     setChapters(emptyChapters());
     setShowUpload(false);
     setEditingId(null);
@@ -35,6 +39,7 @@ const ProfileContent = ({ obras, addArtwork, updateArtwork, reloadProfile }) => 
     setEditingStatus(artwork.status || "publicada");
     setArtTitle(artwork.title || "");
     setDescription(artwork.description || "");
+    setGenre(artwork.artworkType || artwork.genre || "");
     setChapters(
       imgs.length > 0
         ? imgs.map((url, i) => ({ title: `Capítulo ${i + 1}`, imageUrl: url }))
@@ -48,25 +53,19 @@ const ProfileContent = ({ obras, addArtwork, updateArtwork, reloadProfile }) => 
     if (!artTitle.trim() || !description.trim() || overLimit) return;
     const filled = chapters.filter((ch) => ch.imageUrl.trim() !== "");
     if (filled.length === 0) return;
+    const payload = {
+      title: artTitle.trim(),
+      description: description.trim(),
+      genre: genre,
+      chapters: filled.map((ch) => ({
+        title: ch.title.trim() || `Capítulo`,
+        imageUrl: ch.imageUrl.trim(),
+      })),
+    };
     if (editingId) {
-      updateArtwork(editingId, {
-        title: artTitle.trim(),
-        description: description.trim(),
-        status: editingStatus,
-        chapters: filled.map((ch) => ({
-          title: ch.title.trim() || `Capítulo`,
-          imageUrl: ch.imageUrl.trim(),
-        })),
-      });
+      updateArtwork(editingId, { ...payload, status: editingStatus });
     } else {
-      addArtwork({
-        title: artTitle.trim(),
-        description: description.trim(),
-        chapters: filled.map((ch) => ({
-          title: ch.title.trim() || `Capítulo`,
-          imageUrl: ch.imageUrl.trim(),
-        })),
-      });
+      addArtwork(payload);
     }
     resetForm();
   };
@@ -124,6 +123,20 @@ const ProfileContent = ({ obras, addArtwork, updateArtwork, reloadProfile }) => 
             <p className={`text-xs mt-1 ${description.length > MAX_DESC ? 'text-red-400' : 'text-gray-500'}`}>
               {description.length}/{MAX_DESC}
             </p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-white mb-1">Género</label>
+            <select
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className="w-full p-3 rounded bg-black text-white border border-purple-700 focus:outline-none focus:border-pink-700"
+            >
+              <option value="">Seleccionar género</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-4">

@@ -50,6 +50,11 @@ const ObraCard = ({ obra, onClick, onLike, currentUser }) => {
           {obra.title}
         </h3>
         <p className="text-gray-400 text-sm">por {obra.artistName}</p>
+        {obra.genre && (
+          <span className="inline-block mt-1 text-xs font-bold px-2 py-0.5 bg-pink-800 text-pink-200">
+            {obra.genre}
+          </span>
+        )}
         <div className="flex items-center justify-between mt-3">
           <button
             onClick={(e) => {
