@@ -34,15 +34,19 @@ const EventosContent = () => {
 
   const filtered = useMemo(() => {
     return eventos.filter((e) => {
-      if (filterComuna && e.commune !== filterComuna) return false;
+      if (filterComuna) {
+        const evCommune = (e.commune || "").trim().toLowerCase();
+        const filterVal = filterComuna.trim().toLowerCase();
+        if (evCommune !== filterVal) return false;
+      }
       if (dateFrom && e.date) {
-        const d = new Date(e.date.split("/").reverse().join("-"));
-        const from = new Date(dateFrom);
+        const d = new Date(e.date.split("/").reverse().join("-") + "T12:00:00");
+        const from = new Date(dateFrom + "T12:00:00");
         if (d < from) return false;
       }
       if (dateTo && e.date) {
-        const d = new Date(e.date.split("/").reverse().join("-"));
-        const to = new Date(dateTo);
+        const d = new Date(e.date.split("/").reverse().join("-") + "T12:00:00");
+        const to = new Date(dateTo + "T12:00:00");
         if (d > to) return false;
       }
       return true;

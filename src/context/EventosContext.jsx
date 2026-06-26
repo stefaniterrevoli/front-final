@@ -17,7 +17,7 @@ export function EventosProvider({ children }) {
         latitude: e.latitude,
         longitude: e.longitude,
         region: e.region,
-        commune: e.commune,
+        commune: e.commune || e.location || e.comuna || e.city || "",
         imageUrl: e.imageUrl || e.image_url,
         date: e.eventDate ? new Date(e.eventDate).toLocaleDateString() : e.event_date ? new Date(e.event_date).toLocaleDateString() : "",
         status: e.status,

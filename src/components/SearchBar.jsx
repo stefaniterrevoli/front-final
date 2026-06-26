@@ -53,20 +53,45 @@ const SearchBar = () => {
     const groups = { Evento: [], Noticia: [], Obra: [], Creador: [] };
 
     try {
-      const admin = JSON.parse(localStorage.getItem("creativa_admin_data") || "{}");
+      const admin = JSON.parse(
+        localStorage.getItem("creativa_admin_data") || "{}",
+      );
       (admin.eventos || []).forEach((ev) => {
-        if (toStr(ev.title).includes(q) || toStr(ev.description).includes(q) || toStr(ev.location).includes(q))
-          groups.Evento.push({ ...ev, _type: "Evento", _route: "/eventos", _sortKey: toStr(ev.title) });
+        if (
+          toStr(ev.title).includes(q) ||
+          toStr(ev.description).includes(q) ||
+          toStr(ev.location).includes(q)
+        )
+          groups.Evento.push({
+            ...ev,
+            _type: "Evento",
+            _route: "/eventos",
+            _sortKey: toStr(ev.title),
+          });
       });
       (admin.noticias || []).forEach((n) => {
         if (toStr(n.title).includes(q) || toStr(n.content).includes(q))
-          groups.Noticia.push({ ...n, _type: "Noticia", _route: "/noticias", _sortKey: toStr(n.title) });
+          groups.Noticia.push({
+            ...n,
+            _type: "Noticia",
+            _route: "/noticias",
+            _sortKey: toStr(n.title),
+          });
       });
     } catch {}
 
     cached.artworks.forEach((o) => {
-      if (toStr(o.title).includes(q) || toStr(o.artist_name || o.artisticName || o.artistName).includes(q) || toStr(o.description).includes(q))
-        groups.Obra.push({ ...o, _type: "Obra", _route: "/obras", _sortKey: toStr(o.title) });
+      if (
+        toStr(o.title).includes(q) ||
+        toStr(o.artist_name || o.artisticName || o.artistName).includes(q) ||
+        toStr(o.description).includes(q)
+      )
+        groups.Obra.push({
+          ...o,
+          _type: "Obra",
+          _route: "/obras",
+          _sortKey: toStr(o.title),
+        });
     });
 
     cached.creators.forEach((c) => {
@@ -84,7 +109,9 @@ const SearchBar = () => {
     });
 
     // Sort alphabetically within each group
-    Object.values(groups).forEach((arr) => arr.sort((a, b) => a._sortKey.localeCompare(b._sortKey)));
+    Object.values(groups).forEach((arr) =>
+      arr.sort((a, b) => a._sortKey.localeCompare(b._sortKey)),
+    );
 
     // Flatten with headers, max 8 results
     const flat = [];
@@ -138,7 +165,9 @@ const SearchBar = () => {
                 key={`header-${i}`}
                 className="px-4 pt-3 pb-1 text-xs font-bold text-gray-500 uppercase tracking-wider"
               >
-                {item.label === "Evento" && "📅"} {item.label === "Noticia" && "📰"} {item.label === "Obra" && "🎨"} {item.label === "Creador" && "👤"} {item.label}
+                {item.label === "Evento" && ""} {item.label === "Noticia" && ""}{" "}
+                {item.label === "Obra" && ""} {item.label === "Creador" && ""}{" "}
+                {item.label}
               </div>
             ) : (
               <button
@@ -149,14 +178,16 @@ const SearchBar = () => {
                 <p className="text-white font-bold text-sm truncate">
                   {item.title || item.name}
                 </p>
-                <p className={`text-xs ${typeColors[item._type] || "text-gray-400"}`}>
+                <p
+                  className={`text-xs ${typeColors[item._type] || "text-gray-400"}`}
+                >
                   {item._type}
                   {item.artistName && ` · ${item.artistName}`}
                   {item.artist_name && ` · ${item.artist_name}`}
                   {item.location && ` · ${item.location}`}
                 </p>
               </button>
-            )
+            ),
           )}
         </div>
       )}

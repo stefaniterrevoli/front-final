@@ -62,16 +62,22 @@ const AdminEventos = () => {
     if (!loc.trim()) return { lat: null, lng: null };
     try {
       const params = new URLSearchParams({
-        q: loc,
+        q: `${loc}, Región Metropolitana, Chile`,
         format: "json",
         limit: 1,
+        countrycodes: "cl",
       });
       const res = await fetch(`${NOMINATIM_URL}?${params}`, {
         headers: { "User-Agent": "creAtiva/1.0" },
       });
       const data = await res.json();
       if (data.length > 0) {
-        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+        const lat = parseFloat(data[0].lat);
+        const lng = parseFloat(data[0].lon);
+        // Validar que esté dentro de la Región Metropolitana (~33.0 a ~34.0 lat, ~70.5 a ~71.5 lng)
+        if (lat >= -34.2 && lat <= -33.0 && lng >= -71.2 && lng <= -70.4) {
+          return { lat, lng };
+        }
       }
     } catch (e) {
       console.error("Error geocodificando:", e);
